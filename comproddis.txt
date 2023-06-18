@@ -1,0 +1,2 @@
+1,Lenovo Thinkpad,laptop,Amd Ryzen 5 4600,35,000,10
+2,Lenovo Idealpad,laptop,Amd Ryzen 7,69,000,5
