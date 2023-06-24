@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <conio.h>
 
+
 using namespace std;
 
 void start();
@@ -311,7 +312,7 @@ void account(){
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                      Joetech (Stock) Inventory Management System                                              |\n";
+    cout << "\t\t\t      |                                                         Joetech (Stock) Management System                                                     |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -373,7 +374,7 @@ void menu() {
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                      Joetech (Stock) Inventory Management System                                              |\n";
+    cout << "\t\t\t      |                                                      Joetech (Stock) Management System                                                        |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -404,7 +405,7 @@ void Product(){
     int selectedId = 0;
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                      Joetech (POS) Inventory Management System                                                |\n";
+    cout << "\t\t\t      |                                                        Joetech (Stock) Management System                                                      |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -419,8 +420,8 @@ void Product(){
     cout << "\t\t\t      |                                                              [1] Add Products                                                                 |\n";
     cout << "\t\t\t      |                                                              [2] Display Products                                                             |\n"; 
     cout << "\t\t\t      |                                                              [3] Update products                                                              |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                              [4] Delete Product                                       		                 |\n";
+    cout << "\t\t\t      |                                                              [5] Display Specific Product                                                     |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -435,19 +436,27 @@ void Product(){
 
     if (products == "1"){
         AddProduct();
-    }
-    else if (products == "2"){
+    }else if (products == "2"){
         displayProd();
     }else if (products =="3"){
     	if (selectedId != 0) {
             updateProduct(selectedId);
-        } else {
+        }else {
             // Prompt for selecting a product by ID
             cout << "Enter the ID of the product you want to edit: ";
             cin >> selectedId;
             system("cls");
             updateProduct(selectedId);
         }
+	}else if (products == "4"){
+        // Prompt for selecting a product by ID
+		int selectedId;
+		cout << "Enter the ID of the product you want to delete: ";
+		cin >> selectedId;
+		system("cls");
+		deleteProduct(selectedId);
+	}else if (products == "5"){
+		selectProduct();
 	}else if(products == "D" || products == "d"){
     	Dashboard();
 	}else if(products == "O" || products == "o"){
@@ -521,32 +530,37 @@ void AddProduct() {
     Product();
 }
 
+
 void displayProd() {
-	system("cls");
+    system("cls");
     ifstream inputFile("comproddis.txt");
-    cout << "\n"<<endl;
-    cout << "\n"<<endl;
-    cout << "\n"<<endl;
+    cout << "\n\n\n";
     cout << setw(20) <<"ID " << setw(40) << " NAME  " << setw(30) << " CATEGORY " << setw(40) << " Description " << setw(40) << " PRICE " << setw(20) << " Quantity " << endl;
+
     if (inputFile.is_open()) {
         string line;
         while (getline(inputFile, line)) {
             stringstream ss(line);
             string token;
 
-            // Extract data from the line using comma as the delimiter
             getline(ss, token, ',');
             int id;
             istringstream(token) >> id;
 
             getline(ss, token, ',');
-            string name = token;
+            string name = token.substr(0, 9);
+            if (token.length() > 9)
+                name += "...";
 
             getline(ss, token, ',');
-            string category = token;
+            string category = token.substr(0, 9);
+            if (token.length() > 9)
+                category += "...";
 
             getline(ss, token, ',');
-            string description = token;
+            string description = token.substr(0, 15);
+            if (token.length() > 20)
+                description += "...";
 
             getline(ss, token, ',');
             double price;
@@ -555,58 +569,47 @@ void displayProd() {
             getline(ss, token, ',');
             int quantity;
             istringstream(token) >> quantity;
-            
-            // Display the product information
-            cout << "\n";
-            cout.width(20);
-            cout <<"  " << id <<" ";
-            cout.width(20);
-            cout << "  " << name <<"  ";
-            cout.width(20);
-            cout <<"  " << category <<"  ";
-            cout.width(20);
-            cout <<"  " << description <<"  ";
-            cout.width(20);
-            cout <<" $" << fixed << setprecision(2) << price <<"  ";
-            cout.width(20);
-            cout <<"  " << quantity <<"  ";
-            cout << "\n"<<endl;
+
+            cout << setw(18) << id << setw(45) << name << setw(25) << category << setw(42) << description << setw(33) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << endl;
         }
-        	string pick2;
-            cout << "\t\t\t\t\t\t========================================================================================================================\n";
-            cout << "\t\t\t\t\t\t             [B] Back [A] Add Product  [S] Select Product [D] Delete Product  [U] Update Product [O] Order \n";
-            cout << "\t\t\t\t\t\t========================================================================================================================\n";
-            cout << "\t\t\t\t\t\t [<=>] : ";
-            cin >> pick2;
-            
-            if(pick2 == "B" || pick2 == "b"){
-            	Product();
-			}else if (pick2 == "A" || pick2 == "a"){
-				AddProduct();
-			}else if (pick2 == "S" || pick2 == "s"){
-				selectProduct();
-			}else if (pick2 == "D" || pick2 == "d") {
-		    // Prompt for selecting a product by ID
-			    int selectedId;
-			    cout << "Enter the ID of the product you want to delete: ";
-			    cin >> selectedId;
-			    system("cls");
-			    deleteProduct(selectedId);
-			}else if (pick2 == "U" || pick2 == "u") {
-            // Prompt for selecting a product by ID
-	            int selectedId;
-	            cout << "Enter the ID of the product you want to update: ";
-	            cin >> selectedId;
-	            system("cls");
-	            updateProduct(selectedId);
-	        } else{
-				cout << "Order";
-			}
+
+        string pick2;
+        cout << "\t\t\t\t\t\t========================================================================================================================\n";
+        cout << "\t\t\t\t\t\t             [B] Back [A] Add Product  [S] Select Product [D] Delete Product  [U] Update Product [O] Order \n";
+        cout << "\t\t\t\t\t\t========================================================================================================================\n";
+        cout << "\t\t\t\t\t\t [<=>] : ";
+        cin >> pick2;
+
+        if (pick2 == "B" || pick2 == "b") {
+            Product();
+        } else if (pick2 == "A" || pick2 == "a") {
+            AddProduct();
+        } else if (pick2 == "S" || pick2 == "s") {
+            selectProduct();
+        } else if (pick2 == "D" || pick2 == "d") {
+            int selectedId;
+            cout << "Enter the ID of the product you want to delete: ";
+            cin >> selectedId;
+            system("cls");
+            deleteProduct(selectedId);
+        } else if (pick2 == "U" || pick2 == "u") {
+            int selectedId;
+            cout << "Enter the ID of the product you want to update: ";
+            cin >> selectedId;
+            system("cls");
+            updateProduct(selectedId);
+        } else {
+            cout << "Order";
+        }
         inputFile.close();
     } else {
         cout << "Failed to open file for reading." << endl;
     }
 }
+
+
+
+
 void updateProduct(int selectedId) {
     // Open the file for reading
     ifstream inputFile("comproddis.txt");
@@ -723,27 +726,23 @@ void selectProduct() {
                 istringstream(token) >> quantity;
 
                 // Display the product information
-                cout << "Selected Product ID: " << id << endl;
-                cout << "Name: " << name << endl;
-                cout << "Category: " << category << endl;
-                cout << "Description: " << description << endl;
-                cout << "Price: $" << fixed << setprecision(2) << price << endl;
-                cout << "Quantity: " << quantity << endl;
-
+                cout << setw(20) <<"ID " << setw(40) << " NAME  " << setw(30) << " CATEGORY " << setw(40) << " Description " << setw(40) << " PRICE " << setw(20) << " Quantity " << endl;
+				cout << setw(18) << id << setw(45) << name << setw(25) << category << setw(42) << description << setw(33) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << endl;
                 // Prompt for options (Update or Delete)
                 string pick2;
-                cout << "\nChoose an option:\n";
-                cout << "U. Update Product\n";
-                cout << "D. Delete Product\n";
-                cout << "Enter your choice: ";
+                cout << "\t\t\t\t\t\t============================================================================================================\n";
+	            cout << "\t\t		       				 [B] Back 		[D] Delete Product 			 [U] Update Product 				 \n";
+	            cout << "\t\t\t\t\t\t============================================================================================================\n";
+	            cout << "\t\t\t\t\t\t [<=>] : ";
                 cin >> pick2;
                 system("cls");
-
                 if (pick2 == "U" || pick2 == "u") {
                     updateProduct(selectedId);
-                } else if (pick2 == "D" || pick2 == "d") {
+                }else if (pick2 == "D" || pick2 == "d") {
                     deleteProduct(selectedId);
-                } else {
+                }else if (pick2 == "B" || pick2 == "b") {
+                    displayProd();
+                }else {
                     cout << "Invalid option. Please try again." << endl;
                     displayProd();
                 }
@@ -825,7 +824,7 @@ void start() {
     system("cls");// clear screen
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                        Joetech Computer Hardware Inventory                                                    |\n";
+    cout << "\t\t\t      |                                                             Joetech Computer Hardware                                                         |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -856,7 +855,7 @@ void Dashboard() {
     string dash; // Change the data type to string
     cout << "\t\t\t      |================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                            Joetech (POS) Inventory Management System                           |\n";
+    cout << "\t\t\t      |                            Joetech (Stock) Management System                                   |\n";
     cout << "\t\t\t      |                                                                                                |\n";
     cout << "\t\t\t      |================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                |\n";
@@ -928,7 +927,7 @@ int main() {
     cout << "\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                        Joetech Computer Hardware Inventory                                                    |\n";
+    cout << "\t\t\t      |                                                             Joetech Computer Hardware                                                         |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
