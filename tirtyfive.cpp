@@ -222,14 +222,14 @@ void three_Admin(){
 void Register() {
     string username, password, confirmPassword;
     system("cls");
-            cout << "\t\t\t      |===============================================================================================================================================|\n";
-   		    cout << "\t\t\t      |                                                                                                                                               |\n";
-            cout << "\t\t\t      |                                                        Joetech (Stock) Management System                                                      |\n";
-            cout << "\t\t\t      |                                                                                                                                               |\n";
-            cout << "\t\t\t      |===============================================================================================================================================|\n";
-            cout << "\t\t\t      |                                                                  Register                                                                     |\n";
-            cout << "\t\t\t      |===============================================================================================================================================|\n";
-            cout << "\n" << endl;
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                        Joetech (Stock) Management System                                                      |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                  Register                                                                     |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\n" << endl;
     cout << "\t\t\t\t\t\t\t\t\t\t    Username: ";
     cin >> username;
 
@@ -241,11 +241,11 @@ void Register() {
             if (ch == '\b') {  // Handle backspace
                 if (!password.empty()) {
                     password.erase(password.size() - 1);  // Remove the last character
-                    cout << "\b \b";  // Erase previous asterisk
+                    cout << "\b \b";  // Erase previous character
                 }
             } else {
                 password.push_back(ch);
-                cout << '*';  // Print asterisk instead of the actual character
+                cout << ch;  // Print the actual character
             }
         }
         cout << endl;
@@ -256,11 +256,11 @@ void Register() {
             if (ch == '\b') {  // Handle backspace
                 if (!confirmPassword.empty()) {
                     confirmPassword.erase(confirmPassword.size() - 1);  // Remove the last character
-                    cout << "\b \b";  // Erase previous asterisk
+                    cout << "\b \b";  // Erase previous character
                 }
             } else {
                 confirmPassword.push_back(ch);
-                cout << '*';  // Print asterisk instead of the actual character
+                cout << ch;  // Print the actual character
             }
         }
         cout << endl;
@@ -270,37 +270,39 @@ void Register() {
             // ...
             cout << "\t\t\t\t\t\t\t\t\t\t    Registration successful!" << endl;
             Sleep(2000);
-            break;  
+            break;
         } else {
             cout << "\t\t\t\t\t\t\t\t\t\tPasswords do not match. Please try again." << endl;
-            system("pause");  
+            system("pause");
             password = "";
             confirmPassword = "";
             system("cls");
             cout << "\t\t\t      |===============================================================================================================================================|\n";
-   		    cout << "\t\t\t      |                                                                                                                                               |\n";
+            cout << "\t\t\t      |                                                                                                                                               |\n";
             cout << "\t\t\t      |                                                        Joetech (Stock) Management System                                                      |\n";
             cout << "\t\t\t      |                                                                                                                                               |\n";
             cout << "\t\t\t      |===============================================================================================================================================|\n";
             cout << "\t\t\t      |                                                                  Register                                                                     |\n";
             cout << "\t\t\t      |===============================================================================================================================================|\n";
             cout << "\n" << endl;
-            cout << "\t\t\t\t\t\t\t\t\t\t    Username: " << username << endl;  
+            cout << "\t\t\t\t\t\t\t\t\t\t    Username: " << username << endl;
         }
     }
-    
+
     ofstream outputFile("users.txt", ios::app); // Open file in append mode
     if (outputFile.is_open()) {
-        outputFile << username << " " << password << endl;
+        pair<string, string> user(username, password);
+        outputFile << user.first << " " << user.second << endl;
         outputFile.close();
+        cout << "Registration details saved." << endl;
+        system("pause");
     } else {
         cout << "Failed to open file for writing." << endl;
         system("pause");
     }
 
-    login(); 
+    login();
 }
-
 void account(){
 	string choice3;
     system("cls"); // clear screen
