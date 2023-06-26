@@ -223,7 +223,7 @@ void three_Admin(){
 
 
 void Register() {
-    User user;
+    string username, password, confirmPassword;
     system("cls");
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -234,28 +234,27 @@ void Register() {
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\n" << endl;
     cout << "\t\t\t\t\t\t\t\t\t\t    Username: ";
-    cin >> user.username;
+    cin >> username;
 
     while (true) {
         cout << "\t\t\t\t\t\t\t\t\t\t    Password: ";
-        user.password = "";
+        password = "";
         char ch;
         while ((ch = _getch()) != '\r') {  // Read characters until Enter is pressed
             if (ch == '\b') {  // Handle backspace
-                if (!user.password.empty()) {
-                    user.password.erase(user.password.size() - 1);  // Remove the last character
-                    cout << " ";  // Erase previous character
+                if (!password.empty()) {
+                    password.erase(password.size() - 1);  // Remove the last character
+                    cout << "\b \b";  // Erase previous character
                 }
             } else {
-                user.password.push_back(ch);
-                // Uncomment the following line to display the password as it is entered
-                // cout << ch;
+                password.push_back(ch);
+                cout << ch;  // Print the actual character
             }
         }
         cout << endl;
 
         cout << "\t\t\t\t\t\t\t\t\t\t    Confirm Password: ";
-        string confirmPassword = "";
+        confirmPassword = "";
         while ((ch = _getch()) != '\r') {  // Read characters until Enter is pressed
             if (ch == '\b') {  // Handle backspace
                 if (!confirmPassword.empty()) {
@@ -264,18 +263,22 @@ void Register() {
                 }
             } else {
                 confirmPassword.push_back(ch);
-                // Uncomment the following line to display the password as it is entered
-                // cout << ch;
+                cout << ch;  // Print the actual character
             }
         }
         cout << endl;
 
-        if (user.password == confirmPassword) {
+        if (password == confirmPassword) {
+            // Rest of your code for registration...
+            // ...
+            cout << "\t\t\t\t\t\t\t\t\t\t    Registration successful!" << endl;
+            Sleep(2000);
             break;
         } else {
             cout << "\t\t\t\t\t\t\t\t\t\tPasswords do not match. Please try again." << endl;
             system("pause");
-            user.password = "";
+            password = "";
+            confirmPassword = "";
             system("cls");
             cout << "\t\t\t      |===============================================================================================================================================|\n";
             cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -285,25 +288,23 @@ void Register() {
             cout << "\t\t\t      |                                                                  Register                                                                     |\n";
             cout << "\t\t\t      |===============================================================================================================================================|\n";
             cout << "\n" << endl;
-            cout << "\t\t\t\t\t\t\t\t\t\t    Username: " << user.username << endl;
+            cout << "\t\t\t\t\t\t\t\t\t\t    Username: " << username << endl;
         }
     }
 
-    cout << "\t\t\t\t\t\t\t\t\t\t    Email: ";
-    cin >> user.email;
-
     ofstream outputFile("users.txt", ios::app); // Open file in append mode
     if (outputFile.is_open()) {
-        outputFile << user.username << " " << user.password << " " << user.email << endl;
+        pair<string, string> user(username, password);
+        outputFile << user.first << " " << user.second << endl;
         outputFile.close();
-        cout << "\t\t\t\t\t\t\t\t\t\t    Registration successful!" << endl;
-        Sleep(2000);
+        cout << "Registration details saved." << endl;
+        system("pause");
     } else {
         cout << "Failed to open file for writing." << endl;
         system("pause");
     }
 
-    login(); 
+    login();
 }
 
 
@@ -481,7 +482,7 @@ void AddProduct() {
 
     // Read the existing IDs from the file
     vector<int> existingIDs;
-    ifstream inputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+    ifstream inputFile("comproddis.txt");
     if (inputFile.is_open()) {
         string line;
         while (getline(inputFile, line)) {
@@ -522,7 +523,7 @@ void AddProduct() {
         cout << "Enter product quantity: ";
         getline(cin, quantity);
 
-        ofstream file("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt", ios::app);
+        ofstream file("comproddis.txt", ios::app);
         if (file.is_open()) {
             file << id << "," << name << "," << category << "," << description << "," << status << "," << price << "," << quantity << endl;
 
@@ -543,7 +544,7 @@ void AddProduct() {
 
 void displayProd() {
     system("cls");
-    ifstream inputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+    ifstream inputFile("comproddis.txt");
     cout << "\n\n\n";
     cout << " \n" << endl;
     cout << "\t\t     |=========================================================================================================================================================|\n";
@@ -556,7 +557,7 @@ void displayProd() {
     cout << "\t\t     |                                                                                                                                                         |\n";
     cout << "\t\t     |=========================================================================================================================================================|\n";
     cout << " \n" << endl;
-    cout << setw(20) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(40) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
+    cout << setw(30) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
 
     if (inputFile.is_open()) {
         string line;
@@ -596,7 +597,7 @@ void displayProd() {
             int quantity;
             istringstream(token) >> quantity;
 
-cout << setw(18) << id << setw(30) << name << setw(25) << category << setw(42) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
+cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
         }
         string pick2;
         cout << " \n" << endl;
@@ -637,7 +638,7 @@ cout << setw(18) << id << setw(30) << name << setw(25) << category << setw(42) <
 
 void updateProduct(int selectedId) {
     // Open the file for reading
-    ifstream inputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+    ifstream inputFile("comproddis.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -686,7 +687,7 @@ void updateProduct(int selectedId) {
 
         if (found) {
             // Open the file for writing (clears the file)
-            ofstream outputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+            ofstream outputFile("comproddis.txt");
             if (outputFile.is_open()) {
                 // Write all the products back to the file
                 for (size_t i = 0; i < products.size(); ++i) {
@@ -719,7 +720,7 @@ void selectProduct() {
     system("cls");
 
     // Open the file for reading
-    ifstream inputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+    ifstream inputFile("comproddis.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -770,8 +771,8 @@ void selectProduct() {
     cout << "\t\t     |                                                                                                                                                         |\n";
     cout << "\t\t     |=========================================================================================================================================================|\n";
     cout << " \n" << endl;
-    cout << setw(20) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(40) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
-	cout << setw(18) << id << setw(30) << name << setw(25) << category << setw(42) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
+    cout << setw(30) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
+	cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
     // Prompt for options (Update or Delete)
     string pick2;
     cout << " \n" << endl;
@@ -808,7 +809,7 @@ void selectProduct() {
 }
 
 void deleteProduct(int selectedId) {
-    ifstream inputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+    ifstream inputFile("comproddis.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -839,7 +840,7 @@ void deleteProduct(int selectedId) {
         inputFile.close();
 
         if (found) {
-            ofstream outputFile("C:\\Users\\vladi\\Downloads\\Computer_Hardware-main (1)\\Computer_Hardware-main\\output\\Prod.txt");
+            ofstream outputFile("comproddis.txt");
             if (outputFile.is_open()) {
                 for (size_t i = 0; i < products.size(); ++i) {
                     outputFile << products[i] << endl;
