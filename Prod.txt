@@ -1,2 +1,10 @@
-1,Machenike M8,mouse,6800dpi,1499,50
-2,Machenike m17 ,keyboard,mechanical keyboard,2000,15
+1,ASUS VivoBook Flip 14,Laptop,office laptop,available,21990,30
+2,MSi A320M-A PRO,Motherboard,gaming motherboard,available,2840,30
+3,Nvision Led Monitor,Monitor,large monitor,available,2720,30
+4,Seagate Barracuda 1TB,HDD,1 tb hdd,available,2236,30
+5,Ramsta S800 2.5 SATA 3,SSD,high spec ssd,available,1299,30
+6,Amd Heatsink Fan,Fan,gaming fan,available,141,30
+7,Kingston Gaming RAM,RAM,RAM for gaming,available,1350,30
+8,GameKM Desktop Case,Case,desktop case,available,1435,30
+9,machenike 1500,keyboard,mechanical keyboard,available,1600,30
+10,AMD Ryzen 7,Processor,gaming processor,available,11399,30
