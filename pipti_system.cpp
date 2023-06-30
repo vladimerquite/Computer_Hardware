@@ -17,16 +17,15 @@ void start();
 void menu();
 void login();
 void Register();
-void three_Admin();
 void account();
 void Order();
 void Dashboard();
-void TotalProd();
-void TotalOrder();
-void stock();
+void ViewProd();
+void ViewOrder();
 void initializeUsers();
 void logout();
 void Product();
+void searchProduct();
 void AddProduct();
 void displayProd();
 void updateProduct(int selectedId);
@@ -52,13 +51,14 @@ struct Product {
 };
 
 
+
 const int MAX_USERS = 100; 
 User users[MAX_USERS]; 
 int numUsers = 0;
 
 
 void initializeUsers() {
-    ifstream inputFile("users.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\accounts_admin.txt");
     if (inputFile.is_open()) {
         string username, password;
         while (inputFile >> username >> password) {
@@ -115,6 +115,106 @@ void Order(){
 	cout << "Order";
 }
 
+void searchProduct() {
+    system("cls");
+    string back;
+
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+
+    if (!inputFile.is_open()) {
+        cout << "Failed to open file for reading." << endl;
+        return;
+    }
+
+    string searchCriteria;
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t\t\t  Enter search criteria (name/id/category/price): ";
+    cin >> searchCriteria;
+
+    string searchValue;
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t\t\t  Enter search value: ";
+    cin.ignore(); // Ignore newline character from previous input
+    getline(cin, searchValue);
+
+    bool found = false;
+    string line;
+
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                               Joetech (Stock) Management System                                                          |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                       Products Search                                                                    |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+
+    cout << setw(22) << "|" << setw(9) << "ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(14) << "Status" << setw(7) << " |" << endl;
+
+    while (getline(inputFile, line)) {
+        stringstream ss(line);
+        string token;
+
+        getline(ss, token, ',');
+        int id;
+        istringstream(token) >> id;
+
+        getline(ss, token, ',');
+        string name = token;
+
+        getline(ss, token, ',');
+        string category = token;
+
+        getline(ss, token, ',');
+        string description = token;
+
+        getline(ss, token, ',');
+        string status = token;
+
+        getline(ss, token, ',');
+        double price;
+        istringstream(token) >> price;
+
+        getline(ss, token, ',');
+        int quantity;
+        istringstream(token) >> quantity;
+
+        // Perform the search based on the chosen criteria
+        if ((searchCriteria == "id" && to_string(id) == searchValue) ||
+            (searchCriteria == "name" && name.find(searchValue) != string::npos) ||
+            (searchCriteria == "category" && category.find(searchValue) != string::npos) ||
+            (searchCriteria == "price" && to_string(price) == searchValue)) {
+
+            cout << setw(23) << "| " << setw(7) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "P" << fixed << setprecision(2) << price << setw(15) << quantity << setw(18) << status << setw(5) << " |" << endl;
+            found = true;
+        }
+    }
+
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                       [B] Back     [A] Add Product     [S] Search Again?     [D] Delete Product     [U] Update Product     [O] Order                     |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t\t\t\t[<=>] : ";
+    cin >> back;
+
+    if (back == "B" || back == "b") {
+        Dashboard();
+    } else if (back == "S" || back == "s") {
+        searchProduct();
+    }
+
+    if (!found) {
+        cout << "No products found matching the search criteria." << endl;
+    }
+
+    inputFile.close();
+}
+
+
+
 
 void login() {
     string username, password;
@@ -129,9 +229,9 @@ void login() {
             cout << "\t\t\t      |                                                                   Login                                                                       |\n";
             cout << "\t\t\t      |===============================================================================================================================================|\n";
             cout << "\n" << endl;
-    cout << "\t\t\t\t\t\t\t\t\t\t    Username: ";
+    cout << "\t\t\t\t\t\t\t\t\t\t        Username: ";
     cin >> username;
-    cout << "\t\t\t\t\t\t\t\t\t\t    Password: ";
+    cout << "\t\t\t\t\t\t\t\t\t\t        Password: ";
 
     password = "";
     char ch;
@@ -148,7 +248,7 @@ void login() {
     }
 
     bool found = false;
-    ifstream inputFile("users.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\accounts_admin.txt");
     if (inputFile.is_open()) {
         string fileUsername, filePassword;
         while (inputFile >> fileUsername >> filePassword) {
@@ -164,9 +264,9 @@ void login() {
     }
 
     if (found) {
-        cout << "\n\n\t\t\t\t\t\t\t\t\t\t    Login successful!" << endl;
+        cout << "\n\n\t\t\t\t\t\t\t\t\t\t        Login successful!" << endl;
         Sleep(3000);
-        three_Admin();
+        menu();
     } else {
         attemptCount++;
         const int MAX_ATTEMPTS = 3;
@@ -180,45 +280,7 @@ void login() {
             Sleep(3000);
             login();
         }
-    }
-}
-
-void three_Admin(){
-	int pick1;
-	system("cls");
-	cout << "\n";
-	cout << "\n";
-	cout << "\n";
-	cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                             Joetech Computer Hardware                                                         |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                       Welcome!!                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                 [1] Dealer          [2] Customer          [3] Admin                                           |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t       [<=>]: ";
-    cin >> pick1;
-    
-	if(pick1 == '1'){
-		cout<<" Dealer";
-	} else if(pick1 == '2'){
-		cout<<" Customer";
-	}else{
-		menu();
-	}
-    
+    } 
 }
 
 
@@ -292,7 +354,7 @@ void Register() {
         }
     }
 
-    ofstream outputFile("users.txt", ios::app); // Open file in append mode
+    ofstream outputFile("C:\\Users\\vladi\\7_days\\accounts_admin.txt", ios::app); // Open file in append mode
     if (outputFile.is_open()) {
         pair<string, string> user(username, password);
         outputFile << user.first << " " << user.second << endl;
@@ -326,7 +388,7 @@ void account(){
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                         [D] Dashboard          [P] Product          [O] Orders          [A] Account          [L] Logout                       |\n";
+    cout << "\t\t\t      |                                 [D] Dashboard |  [P] Product | [O] Orders | [A] Account | [S] Search  | [L] Logout                            |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
@@ -364,7 +426,9 @@ void account(){
     	account();
 	} else if (choice3 == "P" || choice3 == "p"){
         Product();
-    } else {
+    } else if (choice3 == "S" || choice3 == "s"){
+        searchProduct();
+    }else {
         menu();
     } 
 
@@ -388,7 +452,7 @@ void menu() {
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                        [D] Dashboard          [P] Product          [O] Orders          [A] Account          [L] Logout                        |\n";
+    cout << "\t\t\t      |                                 [D] Dashboard |  [P] Product | [O] Orders | [A] Account | [S] Search  | [L] Logout                            |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
@@ -416,7 +480,7 @@ void Product(){
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                     [D] Dashboard |  [P] Product | [O] Orders | [A] Account | [L] Logout                                      |\n";
+    cout << "\t\t\t      |                                 [D] Dashboard |  [P] Product | [O] Orders | [A] Account | [S] Search  | [L] Logout                            |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                   Product                                                                     |\n";
@@ -427,7 +491,7 @@ void Product(){
     cout << "\t\t\t      |                                                              [1] Add Products                                                                 |\n";
     cout << "\t\t\t      |                                                              [2] Display Products                                                             |\n"; 
     cout << "\t\t\t      |                                                              [3] Update products                                                              |\n";
-    cout << "\t\t\t      |                                                              [4] Delete Product                                      		                 |\n";
+    cout << "\t\t\t      |                                                              [4] Delete products                                                              |\n";
     cout << "\t\t\t      |                                                              [5] Display Specific Product                                                     |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -441,7 +505,10 @@ void Product(){
     cout << "\t\t\t        [<=>] : ";
     cin >> products;
 
-    if (products == "1"){
+    if (products == "S" || products == "s") {
+        searchProduct();
+    }
+    else if (products == "1"){
         AddProduct();
     }else if (products == "2"){
         displayProd();
@@ -482,7 +549,7 @@ void AddProduct() {
 
     // Read the existing IDs from the file
     vector<int> existingIDs;
-    ifstream inputFile("comproddis.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
     if (inputFile.is_open()) {
         string line;
         while (getline(inputFile, line)) {
@@ -523,7 +590,7 @@ void AddProduct() {
         cout << "Enter product quantity: ";
         getline(cin, quantity);
 
-        ofstream file("comproddis.txt", ios::app);
+        ofstream file("C:\\Users\\vladi\\7_days\\final_prod.txt", ios::app);
         if (file.is_open()) {
             file << id << "," << name << "," << category << "," << description << "," << status << "," << price << "," << quantity << endl;
 
@@ -544,20 +611,20 @@ void AddProduct() {
 
 void displayProd() {
     system("cls");
-    ifstream inputFile("comproddis.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
     cout << "\n\n\n";
     cout << " \n" << endl;
-    cout << "\t\t     |=========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |                                                                Joetech (Stock) Management System                                                        |\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |=========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |                                                                       Products Records                                                                  |\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |=========================================================================================================================================================|\n";
-    cout << " \n" << endl;
-    cout << setw(30) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                 Joetech (Stock) Management System                                                        |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                        Products Records                                                                  |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << setw(22) <<"|"<<setw(9) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(14) << "Status" << setw(7) <<" |" << endl;
 
     if (inputFile.is_open()) {
         string line;
@@ -597,14 +664,14 @@ void displayProd() {
             int quantity;
             istringstream(token) >> quantity;
 
-cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
+        cout <<setw(23) <<"| " << setw(7) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(18) << status << setw(5) <<" |" <<endl;
         }
         string pick2;
-        cout << " \n" << endl;
-        cout << " \n" << endl;
-        cout << "\t\t      |=========================================================================================================================================================|\n";
-        cout << "\t\t      |                      [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
-        cout << "\t\t      |=========================================================================================================================================================|\n";
+        cout << "\t\t     |                                                                                                                                                          |\n";
+        cout << "\t\t     |                                                                                                                                                          |\n";
+        cout << "\t\t     |==========================================================================================================================================================|\n";
+        cout << "\t\t     |                       [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
+        cout << "\t\t     |==========================================================================================================================================================|\n";
         cout << "\t\t\t\t\t[<=>] : ";
         cin >> pick2;
 
@@ -638,7 +705,7 @@ cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) <
 
 void updateProduct(int selectedId) {
     // Open the file for reading
-    ifstream inputFile("comproddis.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -687,7 +754,7 @@ void updateProduct(int selectedId) {
 
         if (found) {
             // Open the file for writing (clears the file)
-            ofstream outputFile("comproddis.txt");
+            ofstream outputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
             if (outputFile.is_open()) {
                 // Write all the products back to the file
                 for (size_t i = 0; i < products.size(); ++i) {
@@ -720,7 +787,7 @@ void selectProduct() {
     system("cls");
 
     // Open the file for reading
-    ifstream inputFile("comproddis.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -759,27 +826,27 @@ void selectProduct() {
                 istringstream(token) >> quantity;
 
                 // Display the product information
-                cout << "\n\n\n";
+    cout << "\n\n\n";
     cout << " \n" << endl;
-    cout << "\t\t     |=========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |                                                                Joetech (Stock) Management System                                                        |\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |=========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |                                                                       Products Records                                                                  |\n";
-    cout << "\t\t     |                                                                                                                                                         |\n";
-    cout << "\t\t     |=========================================================================================================================================================|\n";
-    cout << " \n" << endl;
-    cout << setw(30) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
-	cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                 Joetech (Stock) Management System                                                        |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                        Products Records                                                                  |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << setw(22) <<"|"<<setw(9) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(14) << "Status" << setw(7) <<" |" << endl;
+	cout <<setw(23) <<"| " << setw(7) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "P" << fixed << setprecision(2) << price << setw(15) << quantity << setw(18) << status << setw(5) <<" |" <<endl;
     // Prompt for options (Update or Delete)
     string pick2;
-    cout << " \n" << endl;
-    cout << " \n" << endl;
-    cout << "\t\t      |=========================================================================================================================================================|\n";
-    cout << "\t\t      |                      [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
-    cout << "\t\t      |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |                                                                                                                                                          |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << "\t\t     |                       [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
+    cout << "\t\t     |==========================================================================================================================================================|\n";
     cout << "\t\t\t\t\t[<=>] : ";
                 cin >> pick2;
                 system("cls");
@@ -809,7 +876,7 @@ void selectProduct() {
 }
 
 void deleteProduct(int selectedId) {
-    ifstream inputFile("comproddis.txt");
+    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -840,7 +907,7 @@ void deleteProduct(int selectedId) {
         inputFile.close();
 
         if (found) {
-            ofstream outputFile("comproddis.txt");
+            ofstream outputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
             if (outputFile.is_open()) {
                 for (size_t i = 0; i < products.size(); ++i) {
                     outputFile << products[i] << endl;
@@ -900,43 +967,43 @@ void start() {
 void Dashboard() {
     system("cls");
     string dash; // Change the data type to string
-    cout << "\t\t\t      |================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                            Joetech (Stock) Management System                                   |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |      [D] Dashboard | [C] Category | [P] Product | [O] Orders | [A] Account | [L] Logout        |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |================================================================================================|\n";
-    cout << "\t\t\t      |                                          Dashboard                                             |\n";
-    cout << "\t\t\t      |================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                       [1] Total Products                                       |\n";
-    cout << "\t\t\t      |                                       [2] Total Orders                                         |\n";
-    cout << "\t\t\t      |                                       [3] Stock                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |                                                                                                |\n";
-    cout << "\t\t\t      |================================================================================================|\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                           Joetech (Inventory) Management System                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                [D] Dashboard              [P] Product              [O] Orders              [A] Account              [L] Logout                |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                     Dashboard                                                                 |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                [1] View Products                                                              |\n";
+    cout << "\t\t\t      |                                                                [2] Total Orders                                                               |\n";
+    cout << "\t\t\t      |                                                                [3] Search                                                                     |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t        [<=>] : ";
     cin >> dash;
 
     if (dash == "1") {
-        TotalProd();
+        displayProd();
     } else if (dash == "2") {
-        TotalOrder();
+        ViewOrder();
     } else if (dash == "3") {
-        stock();
+        searchProduct();
     } else if (dash == "D" || dash == "d") {
         Dashboard();
     }else if (dash == "A" || dash == "a"){
@@ -947,20 +1014,14 @@ void Dashboard() {
 }
 
 
-void TotalProd() {
+void ViewProd() {
     cout << " Total Prod\n";
     system("pause");
     Dashboard();
 }
 
-void TotalOrder() {
+void ViewOrder() {
     cout << " Total Order\n";
-    system("pause");
-    Dashboard();
-}
-
-void stock() {
-    cout << " Stock\n";
     system("pause");
     Dashboard();
 }
