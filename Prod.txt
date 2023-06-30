@@ -1,2 +1,0 @@
-1,Machenike M8,mouse,6800dpi,1499,50
-2,Machenike m17 ,keyboard,mechanical keyboard,2000,15
