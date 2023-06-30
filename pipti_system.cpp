@@ -17,11 +17,13 @@ void start();
 void menu();
 void login();
 void Register();
+void three_Admin();
 void account();
 void Order();
 void Dashboard();
-void ViewProd();
-void ViewOrder();
+void TotalProd();
+void TotalOrder();
+void stock();
 void initializeUsers();
 void logout();
 void Product();
@@ -31,6 +33,10 @@ void displayProd();
 void updateProduct(int selectedId);
 void selectProduct();
 void deleteProduct(int selectedId);
+void displayAccounts();
+void selectAccount();
+void updateAccount(int accountId);
+void deleteAccount(int accountId);
 
 vector<string> categories; // Declare the vector globally
 
@@ -58,7 +64,7 @@ int numUsers = 0;
 
 
 void initializeUsers() {
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\accounts_admin.txt");
+    ifstream inputFile("users.txt");
     if (inputFile.is_open()) {
         string username, password;
         while (inputFile >> username >> password) {
@@ -72,27 +78,27 @@ void initializeUsers() {
 }
 
 // Function to convert string to int
-int stringToInt(const std::string& str) {
-    std::istringstream iss(str);
+int stringToInt(const string& str) {
+    istringstream iss(str);
     int value;
     iss >> value;
     return value;
 }
 
 // Function to convert string to double
-double stringToDouble(const std::string& str) {
-    std::istringstream iss(str);
+double stringToDouble(const string& str) {
+    istringstream iss(str);
     double value;
     iss >> value;
     return value;
 }
 
-std::string formatPrice(double price) {
-    std::ostringstream ss;
-    ss << "$" << std::fixed << std::setprecision(2) << price;
+string formatPrice(double price) {
+    ostringstream ss;
+    ss << "$" << fixed << setprecision(2) << price;
 
-    std::string priceString = ss.str();
-    std::string::size_type decimalPos = priceString.find('.');
+    string priceString = ss.str();
+    string::size_type decimalPos = priceString.find('.');
 
     int startPos = (priceString[0] == '$') ? 1 : 0;
     int commaPos = decimalPos - 3;
@@ -117,41 +123,27 @@ void Order(){
 
 void searchProduct() {
     system("cls");
-    string back;
 
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+    ifstream inputFile("Prod.txt");
 
     if (!inputFile.is_open()) {
         cout << "Failed to open file for reading." << endl;
         return;
     }
 
+    cout << "Search Product" << endl;
+
     string searchCriteria;
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t\t\t  Enter search criteria (name/id/category/price): ";
+    cout << "Enter search criteria (name/id): ";
     cin >> searchCriteria;
 
     string searchValue;
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t\t\t  Enter search value: ";
+    cout << "Enter search value: ";
     cin.ignore(); // Ignore newline character from previous input
     getline(cin, searchValue);
 
     bool found = false;
     string line;
-
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                               Joetech (Stock) Management System                                                          |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                       Products Search                                                                    |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-
-    cout << setw(22) << "|" << setw(9) << "ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(14) << "Status" << setw(7) << " |" << endl;
 
     while (getline(inputFile, line)) {
         stringstream ss(line);
@@ -181,33 +173,24 @@ void searchProduct() {
         int quantity;
         istringstream(token) >> quantity;
 
-        // Perform the search based on the chosen criteria
         if ((searchCriteria == "id" && to_string(id) == searchValue) ||
-            (searchCriteria == "name" && name.find(searchValue) != string::npos) ||
-            (searchCriteria == "category" && category.find(searchValue) != string::npos) ||
-            (searchCriteria == "price" && to_string(price) == searchValue)) {
-
-            cout << setw(23) << "| " << setw(7) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "P" << fixed << setprecision(2) << price << setw(15) << quantity << setw(18) << status << setw(5) << " |" << endl;
+            (searchCriteria == "name" && name.find(searchValue) != string::npos)) {
+            cout << "Product Found:" << endl;
+            cout << "ID: " << id << endl;
+            cout << "Name: " << name << endl;
+            cout << "Category: "<< category << endl;
+            cout << "Description: " << description << endl;
+            cout << "Status: " << status << endl;
+            cout << "Price: $" << fixed << setprecision(2) << price << endl;
+            cout << "Quantity:" << quantity << endl;
             found = true;
+            system("pause");
+            Product();
         }
     }
 
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                       [B] Back     [A] Add Product     [S] Search Again?     [D] Delete Product     [U] Update Product     [O] Order                     |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t\t\t\t[<=>] : ";
-    cin >> back;
-
-    if (back == "B" || back == "b") {
-        Dashboard();
-    } else if (back == "S" || back == "s") {
-        searchProduct();
-    }
-
     if (!found) {
-        cout << "No products found matching the search criteria." << endl;
+        cout << "No product found matching the search criteria." << endl;
     }
 
     inputFile.close();
@@ -215,23 +198,21 @@ void searchProduct() {
 
 
 
-
 void login() {
     string username, password;
-    int attemptCount = 0;  // Counter for login attempts
 
     system("cls");
-            cout << "\t\t\t      |===============================================================================================================================================|\n";
-   		    cout << "\t\t\t      |                                                                                                                                               |\n";
-            cout << "\t\t\t      |                                                        Joetech (Stock) Management System                                                      |\n";
-            cout << "\t\t\t      |                                                                                                                                               |\n";
-            cout << "\t\t\t      |===============================================================================================================================================|\n";
-            cout << "\t\t\t      |                                                                   Login                                                                       |\n";
-            cout << "\t\t\t      |===============================================================================================================================================|\n";
-            cout << "\n" << endl;
-    cout << "\t\t\t\t\t\t\t\t\t\t        Username: ";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                        Joetech (Stock) Management System                                                      |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                   Login                                                                       |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\n" << endl;
+    cout << "\t\t\t\t\t\t\t\t\t\t    Username: ";
     cin >> username;
-    cout << "\t\t\t\t\t\t\t\t\t\t        Password: ";
+    cout << "\t\t\t\t\t\t\t\t\t\t    Password: ";
 
     password = "";
     char ch;
@@ -248,12 +229,15 @@ void login() {
     }
 
     bool found = false;
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\accounts_admin.txt");
+    int userID;
+    string email;
+    ifstream inputFile("users.txt");
     if (inputFile.is_open()) {
-        string fileUsername, filePassword;
-        while (inputFile >> fileUsername >> filePassword) {
+        string fileUsername, filePassword, fileEmail;
+        while (inputFile >> userID >> fileUsername >> filePassword >> fileEmail) {
             if (fileUsername == username && filePassword == password) {
                 found = true;
+                email = fileEmail;
                 break;
             }
         }
@@ -264,28 +248,58 @@ void login() {
     }
 
     if (found) {
-        cout << "\n\n\t\t\t\t\t\t\t\t\t\t        Login successful!" << endl;
+        cout << "\n\n\t\t\t\t\t\t\t\t\t\t    Login successful!" << endl;
         Sleep(3000);
-        menu();
+        three_Admin();
     } else {
-        attemptCount++;
-        const int MAX_ATTEMPTS = 3;
+        cout << "\n\n\t\t\t\t\t\t\t\t    Login failed. Invalid username or password." << endl;
+        Sleep(3000);
+        login();
+    }
+}
 
-        if (attemptCount > MAX_ATTEMPTS) {
-            cout << "\n\n\t\t\t\t\t\t\t\t    Maximum number of login attempts reached. Exiting." << endl;
-            Sleep(3000);
-            exit(0);  // Terminate the program
-        } else {
-            cout << "\n\n\t\t\t\t\t\t\t\t    Login failed. Invalid username or password." << endl;
-            Sleep(3000);
-            login();
-        }
-    } 
+void three_Admin(){
+	int pick1;
+	system("cls");
+	cout << "\n";
+	cout << "\n";
+	cout << "\n";
+	cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                             Joetech Computer Hardware                                                         |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                       Welcome!!                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                 [1] Dealer          [2] Customer          [3] Admin                                           |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |                                                                                                                                               |\n";
+    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t       [<=>]: ";
+    cin >> pick1;
+    
+	if(pick1 == '1'){
+		cout<<" Dealer";
+	} else if(pick1 == '2'){
+		cout<<" Customer";
+	}else{
+		menu();
+	}
+    
 }
 
 
 void Register() {
-    string username, password, confirmPassword;
+    using namespace std;
+    string username, password, confirmPassword, email;
     system("cls");
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -295,8 +309,29 @@ void Register() {
     cout << "\t\t\t      |                                                                  Register                                                                     |\n";
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\n" << endl;
+    cout << "\t\t\t\t\t\t\t\t\t\t    Email: ";
+    cin >> email;
     cout << "\t\t\t\t\t\t\t\t\t\t    Username: ";
     cin >> username;
+
+    // Generate a unique ID for the user
+    int userID = 0;
+
+    ifstream inputFile("users.txt");
+    if (inputFile.is_open()) {
+        int fileUserID;
+        string fileUsername, filePassword, fileEmail;
+        while (inputFile >> fileUserID >> fileUsername >> filePassword >> fileEmail) {
+            userID = fileUserID;  // Update the ID to the latest value
+        }
+        inputFile.close();
+    } else {
+        cout << "Failed to open file for reading." << endl;
+        system("pause");
+        login();
+    }
+
+    userID++;  // Increment the ID for the new user
 
     while (true) {
         cout << "\t\t\t\t\t\t\t\t\t\t    Password: ";
@@ -350,14 +385,14 @@ void Register() {
             cout << "\t\t\t      |                                                                  Register                                                                     |\n";
             cout << "\t\t\t      |===============================================================================================================================================|\n";
             cout << "\n" << endl;
+            cout << "\t\t\t\t\t\t\t\t\t\t    Email: " << email << endl;
             cout << "\t\t\t\t\t\t\t\t\t\t    Username: " << username << endl;
         }
     }
 
-    ofstream outputFile("C:\\Users\\vladi\\7_days\\accounts_admin.txt", ios::app); // Open file in append mode
+    ofstream outputFile("users.txt", ios::app); // Open file in append mode
     if (outputFile.is_open()) {
-        pair<string, string> user(username, password);
-        outputFile << user.first << " " << user.second << endl;
+        outputFile << userID << " " << username << " " << password << " " << email << endl;
         outputFile.close();
         cout << "Registration details saved." << endl;
         system("pause");
@@ -370,12 +405,12 @@ void Register() {
 }
 
 
+
 void account(){
 	string choice3;
     system("cls"); // clear screen
     cout << "\n";
     cout << "\n";
-    
     cout << "\t\t\t      |===============================================================================================================================================|\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
     cout << "\t\t\t      |                                                                                                                                               |\n";
@@ -415,11 +450,17 @@ void account(){
     cin >> choice3;
     
 	if (choice3 == "1"){
-		cout<<" Display Account";
+        displayAccounts();
 	} else if (choice3 == "2"){
-		cout<<" Edit Account";
+		int accountId; // Declare the accountId variable
+        cout << "Input ID to update: ";
+        cin >> accountId;
+        updateAccount(accountId);
 	}else if (choice3 == "3"){
-		cout<<" Remove Account";
+		int accountId;
+        cout << "Input ID to delete: ";
+        cin >> accountId;
+        deleteAccount(accountId);
 	}else if (choice3 == "D" || choice3 == "d") {
         Dashboard();
     } else if (choice3 == "A" || choice3 == "a") {
@@ -465,6 +506,8 @@ void menu() {
     	account();
 	} else if (choice == "P" || choice == "p"){
         Product();
+    } else if (choice == "S" || choice == "s") {
+        searchProduct();
     }else {
         start();
     }
@@ -549,7 +592,7 @@ void AddProduct() {
 
     // Read the existing IDs from the file
     vector<int> existingIDs;
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+    ifstream inputFile("Prod.txt");
     if (inputFile.is_open()) {
         string line;
         while (getline(inputFile, line)) {
@@ -568,7 +611,7 @@ void AddProduct() {
 
     // Find the next available ID
     int id = 1;
-    while (std::find(existingIDs.begin(), existingIDs.end(), id) != existingIDs.end()) {
+    while (find(existingIDs.begin(), existingIDs.end(), id) != existingIDs.end()) {
         id++;
     }
 
@@ -585,17 +628,21 @@ void AddProduct() {
         getline(cin, description);
         cout << "Enter product price: ";
         getline(cin, price);
-        cout << " Enter product status: ";
-        getline(cin, status);
         cout << "Enter product quantity: ";
         getline(cin, quantity);
+        cout << "Enter product status: ";
+        getline(cin, status);
 
-        ofstream file("C:\\Users\\vladi\\7_days\\final_prod.txt", ios::app);
-        if (file.is_open()) {
-            file << id << "," << name << "," << category << "," << description << "," << status << "," << price << "," << quantity << endl;
+        // Create the product line
+        stringstream product;
+        product << id << "," << name << "," << category << "," << description << "," << status << "," << price << "," << quantity;
 
+        // Open the file for appending
+        ofstream outputFile("Prod.txt", ios::app);
+        if (outputFile.is_open()) {
+            outputFile << product.str() << endl;
+            outputFile.close();
             cout << "Product added successfully!" << endl;
-            file.close();
             id++; // Increment the ID for the next product
         } else {
             cout << "Error opening the file!" << endl;
@@ -603,28 +650,29 @@ void AddProduct() {
 
         cout << "Do you want to add another product? (y/n): ";
         cin >> choice;
-    } while (choice == 'y' || choice == 'Y'); 
-    
+    } while (choice == 'y' || choice == 'Y');
+
     Product();
 }
 
 
+
 void displayProd() {
     system("cls");
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+    ifstream inputFile("Prod.txt");
     cout << "\n\n\n";
     cout << " \n" << endl;
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                 Joetech (Stock) Management System                                                        |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                        Products Records                                                                  |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << setw(22) <<"|"<<setw(9) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(14) << "Status" << setw(7) <<" |" << endl;
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |                                                                Joetech (Stock) Management System                                                        |\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |                                                                       Products Records                                                                  |\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << " \n" << endl;
+    cout << setw(30) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
 
     if (inputFile.is_open()) {
         string line;
@@ -664,14 +712,14 @@ void displayProd() {
             int quantity;
             istringstream(token) >> quantity;
 
-        cout <<setw(23) <<"| " << setw(7) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(18) << status << setw(5) <<" |" <<endl;
+        cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
         }
         string pick2;
-        cout << "\t\t     |                                                                                                                                                          |\n";
-        cout << "\t\t     |                                                                                                                                                          |\n";
-        cout << "\t\t     |==========================================================================================================================================================|\n";
-        cout << "\t\t     |                       [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
-        cout << "\t\t     |==========================================================================================================================================================|\n";
+        cout << " \n" << endl;
+        cout << " \n" << endl;
+        cout << "\t\t      |=========================================================================================================================================================|\n";
+        cout << "\t\t      |                      [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
+        cout << "\t\t      |=========================================================================================================================================================|\n";
         cout << "\t\t\t\t\t[<=>] : ";
         cin >> pick2;
 
@@ -705,7 +753,7 @@ void displayProd() {
 
 void updateProduct(int selectedId) {
     // Open the file for reading
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+    ifstream inputFile("Prod.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -754,7 +802,7 @@ void updateProduct(int selectedId) {
 
         if (found) {
             // Open the file for writing (clears the file)
-            ofstream outputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+            ofstream outputFile("Prod.txt");
             if (outputFile.is_open()) {
                 // Write all the products back to the file
                 for (size_t i = 0; i < products.size(); ++i) {
@@ -787,7 +835,7 @@ void selectProduct() {
     system("cls");
 
     // Open the file for reading
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+    ifstream inputFile("Prod.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -826,27 +874,27 @@ void selectProduct() {
                 istringstream(token) >> quantity;
 
                 // Display the product information
-    cout << "\n\n\n";
+                cout << "\n\n\n";
     cout << " \n" << endl;
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                 Joetech (Stock) Management System                                                        |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                        Products Records                                                                  |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << setw(22) <<"|"<<setw(9) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(14) << "Status" << setw(7) <<" |" << endl;
-	cout <<setw(23) <<"| " << setw(7) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "P" << fixed << setprecision(2) << price << setw(15) << quantity << setw(18) << status << setw(5) <<" |" <<endl;
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |                                                                Joetech (Stock) Management System                                                        |\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |                                                                       Products Records                                                                  |\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << " \n" << endl;
+    cout << setw(30) <<"ID " << setw(25) << " NAME  " << setw(30) << " CATEGORY " << setw(30) << " Description " << setw(20) << " PRICE " << setw(20) << " Quantity " << setw(10) << "Status" << endl;
+	cout << setw(28) << id << setw(30) << name << setw(25) << category << setw(32) << description << setw(15) << "$" << fixed << setprecision(2) << price << setw(15) << quantity << setw(15) << status << endl;
     // Prompt for options (Update or Delete)
     string pick2;
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |                                                                                                                                                          |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
-    cout << "\t\t     |                       [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
-    cout << "\t\t     |==========================================================================================================================================================|\n";
+    cout << " \n" << endl;
+    cout << " \n" << endl;
+    cout << "\t\t      |=========================================================================================================================================================|\n";
+    cout << "\t\t      |                      [B] Back     [A] Add Product     [S] Select Product     [D] Delete Product     [U] Update Product     [O] Order                    |\n";
+    cout << "\t\t      |=========================================================================================================================================================|\n";
     cout << "\t\t\t\t\t[<=>] : ";
                 cin >> pick2;
                 system("cls");
@@ -876,7 +924,7 @@ void selectProduct() {
 }
 
 void deleteProduct(int selectedId) {
-    ifstream inputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+    ifstream inputFile("Prod.txt");
     if (inputFile.is_open()) {
         string line;
         bool found = false;
@@ -907,7 +955,7 @@ void deleteProduct(int selectedId) {
         inputFile.close();
 
         if (found) {
-            ofstream outputFile("C:\\Users\\vladi\\7_days\\final_prod.txt");
+            ofstream outputFile("Prod.txt");
             if (outputFile.is_open()) {
                 for (size_t i = 0; i < products.size(); ++i) {
                     outputFile << products[i] << endl;
@@ -930,6 +978,237 @@ void deleteProduct(int selectedId) {
     cin >> pick5;
     displayProd();
 }
+
+void deleteAccount(int accountId) {
+    // Read all accounts from the file
+    ifstream inputFile("users.txt");
+    vector<string> accounts;
+    if (inputFile.is_open()) {
+        int fileUserID;
+        string fileUsername, filePassword, fileEmail;
+        while (inputFile >> fileUserID >> fileUsername >> filePassword >> fileEmail) {
+            if (fileUserID != accountId) {
+                // Add the account to the vector
+                string account = to_string(fileUserID) + " " + fileUsername + " " + filePassword + " " + fileEmail;
+                accounts.push_back(account);
+            }
+        }
+        inputFile.close();
+    } else {
+        cout << "Failed to open file for reading." << endl;
+        system("pause");
+        return;
+    }
+
+    // Rewrite the file with updated accounts
+    ofstream outputFile("users.txt");
+    if (outputFile.is_open()) {
+        int newAccountId = 1;
+        for (const string& account : accounts) {
+            // Extract the account details
+            stringstream ss(account);
+            int fileUserID;
+            string fileUsername, filePassword, fileEmail;
+            ss >> fileUserID >> fileUsername >> filePassword >> fileEmail;
+
+            // Update the account ID
+            outputFile << newAccountId << " " << fileUsername << " " << filePassword << " " << fileEmail << endl;
+            newAccountId++;
+        }
+        outputFile.close();
+
+        cout << "Account deleted successfully!" << endl;
+        system("pause");
+        displayAccounts();
+    } else {
+        cout << "Failed to open file for writing." << endl;
+        system("pause");
+    }
+}
+
+
+void displayAccounts() {
+    system("cls");
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |                                                                Joetech (Stock) Management System                                                        |\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |                                                                       List of Accounts                                                                  |\n";
+    cout << "\t\t     |                                                                                                                                                         |\n";
+    cout << "\t\t     |=========================================================================================================================================================|\n";
+    cout << " \n" << endl;
+    cout << setw(30) << "ID " << setw(25) << " NAME  " << setw(30) << " Email " << endl;
+
+    ifstream inputFile("users.txt");
+    if (inputFile.is_open()) {
+        int userID;
+        string username, password, email;
+        while (inputFile >> userID >> username >> password >> email) {
+            cout << setw(28) << userID << setw(25) << username << setw(25) << email << endl;
+        }
+        inputFile.close();
+    } else {
+        cout << "Failed to open file for reading." << endl;
+        system("pause");
+        return;
+    }
+
+    cout << " \n" << endl;
+    cout << " \n" << endl;
+    cout << "\t\t      |=========================================================================================================================================================|\n";
+    cout << "\t\t      |                      [B] Back       [S] Select Account     [D] Delete Account     [U] Update Account                                                    |\n";
+    cout << "\t\t      |=========================================================================================================================================================|\n";
+    cout << "\t\t\t\t\t[<=>] : ";
+    string pick6;
+    cin >> pick6;
+    if (pick6 == "B" || pick6 == "b") {
+        account();
+    } else if (pick6 == "S" || pick6 == "s") {
+        selectAccount();
+    } else if (pick6 == "D" || pick6 == "d") {
+        int accountId;
+        cout << "Input ID to delete: ";
+        cin >> accountId;
+        deleteAccount(accountId);
+    } else if (pick6 == "U" || pick6 == "u") {
+        int accountId;
+        cout << "Input ID to update: ";
+        cin >> accountId;
+        updateAccount(accountId);
+    } else {
+        system("pause");
+        displayAccounts();
+    }
+}
+
+void selectAccount() {
+    int accountId;
+    cout << "Input ID to select: ";
+    cin >> accountId;
+
+    // Display the selected ID
+    cout << "Selected ID: " << accountId << endl;
+
+    // Read and display the current details of the selected account
+    ifstream inputFile("users.txt");
+    if (inputFile.is_open()) {
+        int fileUserID;
+        string fileUsername, filePassword, fileEmail;
+        bool accountFound = false;
+        while (inputFile >> fileUserID >> fileUsername >> filePassword >> fileEmail) {
+            if (fileUserID == accountId) {
+                accountFound = true;
+                cout << "Current details of the selected account:" << endl;
+                cout << "ID: " << fileUserID << endl;
+                cout << "Username: " << fileUsername << endl;
+                cout << "Password: " << filePassword << endl;
+                cout << "Email: " << fileEmail << endl;
+                break;
+            }
+        }
+        inputFile.close();
+
+        if (!accountFound) {
+            cout << "Account not found." << endl;
+            system("pause");
+            displayAccounts();
+            return;
+        }
+    } else {
+        cout << "Failed to open file for reading." << endl;
+        system("pause");
+        return;
+    }
+
+    cout << "\t\t      |=========================================================================================================================================================|\n";
+    cout << "\t\t      |                      [B] Back          [D] Delete Account     [U] Update Account                                                                        |\n";
+    cout << "\t\t      |=========================================================================================================================================================|\n";
+    cout << "\t\t\t\t\t[<=>] : ";
+
+    string pick7;
+    cin >> pick7;
+    if (pick7 == "B" || pick7 == "b") {
+        displayAccounts();
+    } else if (pick7 == "D" || pick7 == "d") {
+        deleteAccount(accountId);
+    } else if (pick7 == "U" || pick7 == "u") {
+        updateAccount(accountId);
+    } else {
+        system("pause");
+        displayAccounts();
+    }
+}
+
+void updateAccount(int accountId) {
+    // Read and display the current details of the selected account
+    ifstream inputFile("users.txt");
+    if (inputFile.is_open()) {
+        int fileUserID;
+        string fileUsername, filePassword, fileEmail;
+        while (inputFile >> fileUserID >> fileUsername >> filePassword >> fileEmail) {
+            if (fileUserID == accountId) {
+                cout << "Current details of the selected account:" << endl;
+                cout << "ID: " << fileUserID << endl;
+                cout << "Username: " << fileUsername << endl;
+                cout << "Password: " << filePassword << endl;
+                cout << "Email: " << fileEmail << endl;
+                break;
+            }
+        }
+        inputFile.close();
+    } else {
+        cout << "Failed to open file for reading." << endl;
+        system("pause");
+        return;
+    }
+
+    // Read the new details from the user
+    string username, password, email;
+
+    cout << "Enter new username: ";
+    cin >> username;
+
+    cout << "Enter new password: ";
+    cin >> password;
+
+    cout << "Enter new email: ";
+    cin >> email;
+
+    // Update the account details in the file
+    ifstream inputFile2("users.txt");
+    ofstream outputFile("users_tmp.txt");
+
+    if (inputFile2.is_open() && outputFile.is_open()) {
+        int fileUserID;
+        string fileUsername, filePassword, fileEmail;
+        while (inputFile2 >> fileUserID >> fileUsername >> filePassword >> fileEmail) {
+            if (fileUserID == accountId) {
+                // Update the details for the selected account
+                outputFile << fileUserID << " " << username << " " << password << " " << email << endl;
+            } else {
+                // Write the other accounts as they are
+                outputFile << fileUserID << " " << fileUsername << " " << filePassword << " " << fileEmail << endl;
+            }
+        }
+        inputFile2.close();
+        outputFile.close();
+
+        // Remove the original file
+        remove("users.txt");
+
+        // Rename the temporary file to the original file
+        rename("users_tmp.txt", "users.txt");
+
+        cout << "Account details updated successfully!" << endl;
+        system("pause");
+    } else {
+        cout << "Failed to open files for reading or writing." << endl;
+        system("pause");
+    }
+}
+
 
 
 
@@ -967,43 +1246,43 @@ void start() {
 void Dashboard() {
     system("cls");
     string dash; // Change the data type to string
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                           Joetech (Inventory) Management System                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                [D] Dashboard              [P] Product              [O] Orders              [A] Account              [L] Logout                |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                     Dashboard                                                                 |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                [1] View Products                                                              |\n";
-    cout << "\t\t\t      |                                                                [2] Total Orders                                                               |\n";
-    cout << "\t\t\t      |                                                                [3] Search                                                                     |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |                                                                                                                                               |\n";
-    cout << "\t\t\t      |===============================================================================================================================================|\n";
+    cout << "\t\t\t      |================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                            Joetech (Stock) Management System                                   |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |      [D] Dashboard | [C] Category | [P] Product | [O] Orders | [A] Account | [L] Logout        |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |================================================================================================|\n";
+    cout << "\t\t\t      |                                          Dashboard                                             |\n";
+    cout << "\t\t\t      |================================================================================================|\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                       [1] Total Products                                       |\n";
+    cout << "\t\t\t      |                                       [2] Total Orders                                         |\n";
+    cout << "\t\t\t      |                                       [3] Stock                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |                                                                                                |\n";
+    cout << "\t\t\t      |================================================================================================|\n";
     cout << "\t\t\t        [<=>] : ";
     cin >> dash;
 
     if (dash == "1") {
-        displayProd();
+        TotalProd();
     } else if (dash == "2") {
-        ViewOrder();
+        TotalOrder();
     } else if (dash == "3") {
-        searchProduct();
+        stock();
     } else if (dash == "D" || dash == "d") {
         Dashboard();
     }else if (dash == "A" || dash == "a"){
@@ -1014,14 +1293,20 @@ void Dashboard() {
 }
 
 
-void ViewProd() {
+void TotalProd() {
     cout << " Total Prod\n";
     system("pause");
     Dashboard();
 }
 
-void ViewOrder() {
+void TotalOrder() {
     cout << " Total Order\n";
+    system("pause");
+    Dashboard();
+}
+
+void stock() {
+    cout << " Stock\n";
     system("pause");
     Dashboard();
 }
