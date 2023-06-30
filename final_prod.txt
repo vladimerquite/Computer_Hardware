@@ -1,0 +1,4 @@
+1,Machenike m22,mouse,trimode wireless mouse,low stock,1699,4
+2,Machenike m700,keyboard,Mechanical Keyboard RGB,Not Available,2000,1
+3,Machenike k500,keyboard,Mechanical wired keyboard,Available,1700,20
+4,Corsair,Ram,16gb DDR4 Desktop Ram,Available,9721,50
